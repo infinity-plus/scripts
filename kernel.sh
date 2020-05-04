@@ -161,14 +161,18 @@ cd - || exit 1
 if [ -f "$FINAL_ZIP" ]
 then
   Caption="
-  BUILD-DETAILS
+  *BUILD-DETAILS*
 
-  Name:		$KERNELNAME
-  Version:    	$(head -n3 Makefile | sed -E 's/.*(^\w+\s[=]\s)//g' | xargs | sed -E 's/(\s)/./g')
-  Date:		$(date +%d/%m)
-  Toolchain:	$KBUILD_COMPILER_STRING"
+  *Name:*
+  $KERNELNAME
+  *Version:*
+  $(head -n3 Makefile | sed -E 's/.*(^\w+\s[=]\s)//g' | xargs | sed -E 's/(\s)/./g')
+  *Date:*
+  $(date +%d/%m)
+  *Toolchain:*
+  $KBUILD_COMPILER_STRING"
   echo "$Caption"
-  ./telegram -f "$FINAL_ZIP" "$Caption"
+  ./telegram -M -f "$FINAL_ZIP" "$Caption"
 else
   echo "Zip Creation Failed" 
   exit 1;
