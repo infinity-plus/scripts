@@ -14,13 +14,10 @@ export TZ="Asia/Kolkata"
 
 [ -d "$HOME/TC" ] || mkdir -p "$HOME/TC"
 
-[ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 4.9 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
-[ -d "$HOME/TC/clang" ] && echo "Clang is present"  || echo "Cloning Clang: "        && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang\
+[ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
+[ -d "$HOME/TC/clang" ] && echo "Clang is present"  || echo "Cloning Clang: "    && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
+[ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning GCC 64bit:" && git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64"
 
-cd "$HOME/TC" || exit 1
-wget https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
-tar -xvf gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
-rm gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
 
 cd "$KERNELDIR" || exit 1
 
