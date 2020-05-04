@@ -5,15 +5,24 @@
 # Set timezone ( use "tzselect" to see what to export)
 export TZ="Asia/Kolkata"
 
+[ -f deldog ] && echo "deldog present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/deldog
+
+[ -f telegram ] && echo "telegram present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/telegram
 
 
 # Get toolchains if not already present
 
 [ -d "$HOME/TC" ] || mkdir -p "$HOME/TC"
 
-[ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning gcc 64bit:"     && git clone -q https://github.com/WolfOSP/aarch64-linux-gnu -b gnu-9.x --depth=1 "$HOME/TC/gcc64"
 [ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 4.9 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
 [ -d "$HOME/TC/clang" ] && echo "Clang is present"  || echo "Cloning Clang: "        && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang\
+
+cd "$HOME/TC" || exit 1
+wget https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+tar -xvf gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+rm gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+
+cd "$KERNELDIR" || exit 1
 
 #
 #  Fuctions
@@ -28,16 +37,16 @@ function check_toolchain() {
           export CROSS_COMPILE
           echo -e "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
       else
-	  ./telegram "No suitable toolchain found in $TOOLCHAIN"
+	  telegram "No suitable toolchain found in $TOOLCHAIN"
 	  exit 1
       fi
 }
 
 
-evv() {
-    FILE="$OUTDIR"/include/generated/compile.h
-    export "$(grep "${1}" "${FILE}" | cut -d'"' -f1 | awk '{print $2}')"="$(grep "${1}" "${FILE}" | cut -d'"' -f2)"
-}
+#evv() {
+#   FILE="$OUTDIR"/include/generated/compile.h
+#   export "$(grep "${1}" "${FILE}" | cut -d'"' -f1 | awk '{print $2}')"="$(grep "${1}" "${FILE}" | cut -d'"' -f2)"
+#}
 
 checkVar() {
     if [ ! "$@" ]
@@ -46,7 +55,7 @@ checkVar() {
       fi
     if ! declare | grep "^$1" > /dev/null || [ "$1" = "" ]
       then
-        echo "$1 is not set"
+        echo "$1 is not set" 
         exit 1
       else
         echo "$1 is set"
@@ -59,16 +68,16 @@ checkVar() {
 
 
 # Check necessary variables
-checkVar CHAT_ID
-checkVar BOT_API_KEY
+checkVar TELEGRAM_CHAT
+checkVar TELEGRAM_TOKEN
 checkVar KERNELNAME
 checkVar KERNELDIR
 
-export OUTDIR=$KERNELDIR/out
+export OUTDIR="$KERNELDIR"/out
 export ANYKERNEL=$KERNELDIR/AnyKernel3
 export ARCH=arm64
 export SUBARCH=arm64
-TOOLCHAIN=$HOME/TC/gcc64
+TOOLCHAIN=$HOME/TC/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu
 export TOOLCHAIN
 export ZIP_DIR=$ANYKERNEL
 export IMAGE=$OUTDIR/arch/$ARCH/boot/Image.gz-dtb
@@ -85,9 +94,7 @@ ZIPNAME="$KERNELNAME-$(date +%m%d-%H).zip"
 export ZIPNAME
 export FINAL_ZIP="$ZIP_DIR/$ZIPNAME"
 
-
-[ ! -d "$ZIP_DIR" ] && mkdir -pv "$ZIP_DIR"
-[ ! -d "$OUTDIR" ] && mkdir -pv "$OUTDIR"
+[ -d "$OUTDIR" ] || mkdir -pv "$OUTDIR"
 
 rm -fv "$IMAGE"
 
@@ -140,13 +147,13 @@ fi
 # Make ZIP using AnyKernel
 # ================
 
-[ -d "$ANYKERNEL" ] && echo 'Anykernel Present' || echo 'Cloning AnyKernel' && git clone https://github.com/infinity-plus/AnyKernel3 -b X00T
+[ -d "$ANYKERNEL" ] && echo 'Anykernel Present' || echo 'Cloning AnyKernel' && git clone https://github.com/infinity-plus/AnyKernel3 -b X00T --depth=1
 echo -e "Copying kernel image"
 cp -v "$IMAGE" "$ANYKERNEL/Image.gz-dtb"
-cd "$ANYKERNEL" || exit
+cd "$ANYKERNEL" || exit 1
 mv Image.gz-dtb zImage
 zip -r9 "$ZIPNAME" ./* -x .git -x README.md -x placeholder
-cd - || exit
+cd - || exit 1
 
 
 # Push to telegram if successful
@@ -160,9 +167,9 @@ then
   Version:    	$(head -n3 Makefile | sed -E 's/.*(^\w+\s[=]\s)//g' | xargs | sed -E 's/(\s)/./g')
   Date:		$(date +%d/%m)
   Toolchain:	$KBUILD_COMPILER_STRING"
-
+  echo "$Caption"
   ./telegram -f "$FINAL_ZIP" "$Caption"
 else
-  echo "Zip Creation Failed" | ./telegram -
+  echo "Zip Creation Failed" 
   exit 1;
 fi

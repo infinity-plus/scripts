@@ -25,5 +25,5 @@ function deldog() { (
         echo "ERROR: failed to post document, ca-certificates might need to be installed" >&2
         exit 1
     }
-    echo "${HASTE_URL}/raw/$(jq -r .key <<<"${RESULT}")"
+    echo "${HASTE_URL}/$(jq -r .key <<<"${RESULT}")"
 ); }
