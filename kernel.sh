@@ -100,6 +100,9 @@ export FINAL_ZIP="$ZIP_DIR/$ZIPNAME"
 
 rm -fv "$IMAGE"
 
+KERNELNAME="$(grep "^CONFIG_LOCALVERSION" arch/$ARCH/configs/$DEFCONFIG | cut -d "=" -f2 | tr -d '"')"
+export KERNELNAME
+
 # Send Message about build started
 # ================
 echo -e "Build scheduled\n$KERNELNAME\nBranch: $BRANCH_NAME" | ./telegram -
