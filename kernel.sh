@@ -59,6 +59,10 @@ checkVar() {
     fi
 }
 
+changelog() {
+    bash changelog-generator.sh |& deldog
+}
+
 #
 #  Export variables for compilation
 #
@@ -74,7 +78,7 @@ export OUTDIR="$KERNELDIR"/out
 export ANYKERNEL=$KERNELDIR/AnyKernel3
 export ARCH=arm64
 export SUBARCH=arm64
-TOOLCHAIN=$HOME/TC/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu
+TOOLCHAIN=$HOME/TC/gcc64
 export TOOLCHAIN
 export ZIP_DIR=$ANYKERNEL
 export IMAGE=$OUTDIR/arch/$ARCH/boot/Image.gz-dtb
@@ -167,8 +171,10 @@ then
   *Date:*
   $(date +%d/%m)
   *Toolchain:*
-  $KBUILD_COMPILER_STRING"
-  echo "$Caption"
+  $KBUILD_COMPILER_STRING
+  *Changelog*:
+  $(changelog)"
+  echo "$Caption"hamge
   ./telegram -M -f "$FINAL_ZIP" "$Caption"
 else
   echo "Zip Creation Failed" 
