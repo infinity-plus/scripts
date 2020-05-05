@@ -9,6 +9,7 @@ export TZ="Asia/Kolkata"
 
 [ -f telegram ] && echo "telegram present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/telegram
 
+source deldog
 
 # Get toolchains if not already present
 
@@ -139,7 +140,8 @@ $MAKE -j"$(nproc --all)" \
 # ================
 if [[ ! -f $IMAGE ]]
 then
-    echo "Build failed " | ./telegram -
+    echo "Build Failed!"
+    ./telegram "Build failed, log: $(deldog build-log.txt)"
     exit 1
 else
     echo -e "Build Succesful!"
@@ -174,7 +176,7 @@ then
   $KBUILD_COMPILER_STRING
   *Changelog*:
   $(changelog)"
-  echo "$Caption"hamge
+  echo "$Caption"
   ./telegram -M -f "$FINAL_ZIP" "$Caption"
 else
   echo "Zip Creation Failed" 
