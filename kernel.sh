@@ -9,6 +9,7 @@ export TZ="Asia/Kolkata"
 
 [ -f telegram ] && echo "telegram present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/telegram
 
+#shellscript source=deldog
 source deldog
 
 # Get toolchains if not already present
@@ -72,7 +73,6 @@ changelog() {
 # Check necessary variables
 checkVar TELEGRAM_CHAT
 checkVar TELEGRAM_TOKEN
-checkVar KERNELNAME
 checkVar KERNELDIR
 
 export OUTDIR="$KERNELDIR"/out
