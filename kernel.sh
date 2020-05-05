@@ -17,7 +17,7 @@ source deldog
 
 [ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
 [ -d "$HOME/TC/clang" ] && echo "Clang is present"  || echo "Cloning Clang: "    && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
-[ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning GCC 64bit:" && git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64"
+[ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning GCC 64bit:" && git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64
 
 
 cd "$KERNELDIR" || exit 1
