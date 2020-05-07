@@ -9,8 +9,11 @@ export TZ="Asia/Kolkata"
 
 [ -f telegram ] && echo "telegram present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/telegram
 
+[ -f changelog-generator.sh ] && echo "Changelog-generator.sh present" || curl -LSsO https://github.com/infinity-plus/scripts/master/raw/changelog-generator.sh
 #shellscript source=deldog
 source deldog
+#shellscript source=changelog-generator.sh
+source changelog-generator.sh
 
 # Get toolchains if not already present
 
@@ -61,9 +64,6 @@ checkVar() {
     fi
 }
 
-changelog() {
-    bash changelog-generator.sh |& deldog
-}
 
 #
 #  Export variables for compilation
