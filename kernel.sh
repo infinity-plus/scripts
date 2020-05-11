@@ -5,9 +5,9 @@
 # Set timezone ( use "tzselect" to see what to export)
 export TZ="Asia/Kolkata"
 
-[ -f deldog ] && echo "deldog present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/deldog
+[ -f deldog ] && echo "deldog present" || curl -LSsO https://github.com/infinity-plus/scripts/raw/master/deldog
 
-[ -f telegram ] && echo "telegram present" || curl -LSsO  https://github.com/infinity-plus/scripts/raw/master/telegram
+[ -f telegram ] && echo "telegram present" || curl -LSsO https://github.com/infinity-plus/scripts/raw/master/telegram
 
 [ -f changelog-generator.sh ] && echo "Changelog-generator.sh present" || curl -LSsO https://github.com/infinity-plus/scripts/master/raw/changelog-generator.sh
 #shellscript source=deldog
@@ -20,9 +20,8 @@ source changelog-generator.sh
 [ -d "$HOME/TC" ] || mkdir -p "$HOME/TC"
 
 [ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
-[ -d "$HOME/TC/clang" ] && echo "Clang is present"  || echo "Cloning Clang: "    && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
+[ -d "$HOME/TC/clang" ] && echo "Clang is present" || echo "Cloning Clang: " && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
 [ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning GCC 64bit:" && git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64
-
 
 cd "$KERNELDIR" || exit 1
 
@@ -31,19 +30,17 @@ cd "$KERNELDIR" || exit 1
 #
 
 function check_toolchain() {
-      TC="$(find "$TOOLCHAIN"/bin -type f -name '*-gcc')"
-      export TC
-      if [[ -f "$TC" ]]
-      then
-	  CROSS_COMPILE="$TOOLCHAIN/bin/$(echo "$TC" | awk -F '/' '{print $NF}' | sed -e 's/gcc//')"
-          export CROSS_COMPILE
-          echo -e "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
-      else
-	  telegram "No suitable toolchain found in $TOOLCHAIN"
-	  exit 1
-      fi
+	TC="$(find "$TOOLCHAIN"/bin -type f -name '*-gcc')"
+	export TC
+	if [[ -f "$TC" ]]; then
+		CROSS_COMPILE="$TOOLCHAIN/bin/$(echo "$TC" | awk -F '/' '{print $NF}' | sed -e 's/gcc//')"
+		export CROSS_COMPILE
+		echo -e "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+	else
+		telegram "No suitable toolchain found in $TOOLCHAIN"
+		exit 1
+	fi
 }
-
 
 #evv() {
 #   FILE="$OUTDIR"/include/generated/compile.h
@@ -51,24 +48,20 @@ function check_toolchain() {
 #}
 
 checkVar() {
-    if [ ! "$@" ]
-      then
-        echo "Argument required" && exit 1
-      fi
-    if ! declare | grep "^$1" > /dev/null || [ "$1" = "" ]
-      then
-        echo "$1 is not set" 
-        exit 1
-      else
-        echo "$1 is set"
-    fi
+	if [ ! "$@" ]; then
+		echo "Argument required" && exit 1
+	fi
+	if ! declare | grep "^$1" >/dev/null || [ "$1" = "" ]; then
+		echo "$1 is not set"
+		exit 1
+	else
+		echo "$1 is set"
+	fi
 }
-
 
 #
 #  Export variables for compilation
 #
-
 
 # Check necessary variables
 checkVar TELEGRAM_CHAT
@@ -119,11 +112,9 @@ $MAKE $DEFCONFIG
 # Make clean if script is run with -clean
 #
 
-if [[ "$*" == *"-clean"* ]]
-then
-  make clean && make mrproper
+if [[ "$*" == *"-clean"* ]]; then
+	make clean && make mrproper
 fi
-
 
 #
 #  Start compilation
@@ -132,22 +123,21 @@ fi
 echo 'Beginning compilation'
 
 PATH="$HOME/TC/clang/bin:$HOME/TC/clang/bin:$HOME/TC/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin:$PATH" \
-$MAKE -j"$(nproc --all)" \
-           ARCH=$ARCH \
-           CC=clang \
-           CLANG_TRIPLE="$CLANG_TRIPLE" \
-           CROSS_COMPILE="$CROSS_COMPILE" \
-           CROSS_COMPILE_ARM32="$HOME/TC/gcc32/bin/arm-linux-androideabi-" 2>&1 | tee build-log.txt
+	$MAKE -j"$(nproc --all)" \
+	ARCH=$ARCH \
+	CC=clang \
+	CLANG_TRIPLE="$CLANG_TRIPLE" \
+	CROSS_COMPILE="$CROSS_COMPILE" \
+	CROSS_COMPILE_ARM32="$HOME/TC/gcc32/bin/arm-linux-androideabi-" 2>&1 | tee build-log.txt
 
 # Send log if build failed
 # ================
-if [[ ! -f $IMAGE ]]
-then
-    echo "Build Failed!"
-    ./telegram "Build failed, log: $(deldog build-log.txt)"
-    exit 1
+if [[ ! -f $IMAGE ]]; then
+	echo "Build Failed!"
+	./telegram "Build failed, log: $(deldog build-log.txt)"
+	exit 1
 else
-    echo -e "Build Succesful!"
+	echo -e "Build Succesful!"
 fi
 
 # Make ZIP using AnyKernel
@@ -161,12 +151,10 @@ mv Image.gz-dtb zImage
 zip -r9 "$ZIPNAME" ./* -x .git -x README.md -x placeholder
 cd - || exit 1
 
-
 # Push to telegram if successful
 # ================
-if [ -f "$FINAL_ZIP" ]
-then
-  Caption="
+if [ -f "$FINAL_ZIP" ]; then
+	Caption="
   *BUILD-DETAILS*
 
   *Name:*
@@ -179,9 +167,9 @@ then
   $KBUILD_COMPILER_STRING
   *Changelog*:
   $(changelog)"
-  echo "$Caption"
-  ./telegram -M -f "$FINAL_ZIP" "$Caption"
+	echo "$Caption"
+	./telegram -M -f "$FINAL_ZIP" "$Caption"
 else
-  echo "Zip Creation Failed" 
-  exit 1;
+	echo "Zip Creation Failed"
+	exit 1
 fi
