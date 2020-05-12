@@ -60,7 +60,7 @@ function check_toolchain() {
 		export CROSS_COMPILE
 		echo -e "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
 	else
-		telegram "No suitable toolchain found in $TOOLCHAIN"
+		./telegram "No suitable toolchain found in $TOOLCHAIN"
 		exit 1
 	fi
 }
@@ -121,7 +121,9 @@ export KERNELNAME
 
 # Send Message about build started
 # ================
-echo -e "Build scheduled\n$KERNELNAME\nBranch: $BRANCH_NAME" | ./telegram -
+echo "Build scheduled
+$KERNELNAME
+Branch: $BRANCH_NAME" | ./telegram -
 
 # Export Custom Compiler name
 export KBUILD_COMPILER_STRING=$CLANG_VERSION
