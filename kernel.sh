@@ -5,11 +5,24 @@
 # Set timezone ( use "tzselect" to see what to export)
 export TZ="Asia/Kolkata"
 
-[ -f deldog ] && echo "deldog present" || curl -LSsO https://github.com/infinity-plus/scripts/raw/master/deldog
+if [[ -f deldog ]]; then
+	echo "deldog present"
+else
+	curl -LSsO https://github.com/infinity-plus/scripts/raw/master/deldog
+fi
 
-[ -f telegram ] && echo "telegram present" || curl -LSsO https://github.com/infinity-plus/scripts/raw/master/telegram
+if [[ -f telegram ]]; then
+	echo "telegram present"
+else
+	curl -LSsO https://github.com/infinity-plus/scripts/raw/master/telegram
+fi
 
-[ -f changelog-generator.sh ] && echo "Changelog-generator.sh present" || curl -LSsO https://github.com/infinity-plus/scripts/master/raw/changelog-generator.sh
+if [[ -f changelog-generator.sh ]]; then
+	echo "Changelog-generator.sh present"
+else
+	curl -LSsO https://github.com/infinity-plus/scripts/master/raw/changelog-generator.sh
+fi
+
 #shellscript source=deldog
 source deldog
 #shellscript source=changelog-generator.sh
@@ -17,11 +30,21 @@ source changelog-generator.sh
 
 # Get toolchains if not already present
 
-[ -d "$HOME/TC" ] || mkdir -p "$HOME/TC"
-
-[ -d "$HOME/TC/gcc32" ] && echo "GCC 32bit present" || echo "Cloning GCC 32bit:" && git clone -q https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 "$HOME"/TC/gcc32
-[ -d "$HOME/TC/clang" ] && echo "Clang is present" || echo "Cloning Clang: " && git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
-[ -d "$HOME/TC/gcc64" ] && echo "GCC 64bit present" || echo "Cloning GCC 64bit:" && git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64
+if [[ ! -d "$HOME"/TC ]]; then
+	mkdir -v "$HOME"/TC
+fi
+if [[ ! -d "$HOME"/TC/gcc32 ]]; then
+	echo "Cloning arm32 toolchain"
+	git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.7 --depth=1 "$HOME"/TC/gcc32
+fi
+if [[ ! -d "$HOME"/TC/gcc64 ]]; then
+	echo "Cloning arm64 toolchain"
+	git clone https://github.com/WolfOSP/linaro-TC --depth=1 "$HOME"/TC/gcc64
+fi
+if [[ ! -d "$HOME"/TC/clang ]]; then
+	echo "Cloning arm64 toolchain"
+	git clone -q https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-5900059 --depth=1 "$HOME"/TC/clang
+fi
 
 cd "$KERNELDIR" || exit 1
 
