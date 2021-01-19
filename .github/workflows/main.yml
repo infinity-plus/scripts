@@ -22,7 +22,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: sh-checker
-      uses: luizm/action-sh-checker@v0.1.5
+      uses: luizm/action-sh-checker@v0.1.10
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
