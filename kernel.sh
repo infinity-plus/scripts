@@ -102,7 +102,6 @@ export IMAGE=$OUTDIR/arch/$ARCH/boot/Image.gz-dtb
 export DEFCONFIG=X00T_defconfig
 
 check_toolchain
-export CC="$HOME/TC/clang/bin/clang"
 CLANG_VERSION="$($CC --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 export CLANG_VERSION
 export CLANG_TRIPLE="${CROSS_COMPILE}"
@@ -147,13 +146,12 @@ fi
 
 echo 'Beginning compilation'
 
-PATH="$HOME/TC/clang/bin:$HOME/TC/clang/bin:$HOME/TC/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin:$PATH" \
-	$MAKE -j"$(nproc --all)" \
-	ARCH=$ARCH \
-	CC=clang \
-	CLANG_TRIPLE="$CLANG_TRIPLE" \
-	CROSS_COMPILE="$CROSS_COMPILE" \
-	CROSS_COMPILE_ARM32="$HOME/TC/gcc32/bin/arm-linux-androideabi-" 2>&1 | tee build-log.txt
+PATH="$HOME/TC/clang/bin:$HOME/TC/gcc64/bin:$PATH" \
+$MAKE -j"$(nproc --all)" \
+ARCH=$ARCH \
+CC=clang \
+CROSS_COMPILE="$CROSS_COMPILE" \
+CROSS_COMPILE_ARM32="$HOME/TC/gcc32/bin/arm-linux-androideabi-" 2>&1 | tee build-log.txt
 
 # Send log if build failed
 # ================
@@ -180,18 +178,18 @@ cd - || exit 1
 # ================
 if [ -f "$FINAL_ZIP" ]; then
 	Caption="
-  *BUILD-DETAILS*
-
-  *Name:*
-  $KERNELNAME
-  *Version:*
-  $(head -n3 Makefile | sed -E 's/.*(^\w+\s[=]\s)//g' | xargs | sed -E 's/(\s)/./g')
-  *Date:*
-  $(date +%d/%m)
-  *Toolchain:*
-  $KBUILD_COMPILER_STRING
-  *Changelog*:
-  $(changelog)"
+    *BUILD-DETAILS*
+    
+    *Name:*
+    $KERNELNAME
+    *Version:*
+    $(head -n3 Makefile | sed -E 's/.*(^\w+\s[=]\s)//g' | xargs | sed -E 's/(\s)/./g')
+    *Date:*
+    $(date +%d/%m)
+    *Toolchain:*
+    $KBUILD_COMPILER_STRING
+    *Changelog*:
+    $(changelog)"
 	echo "$Caption"
 	./telegram -M -f "$FINAL_ZIP" "$Caption"
 else
