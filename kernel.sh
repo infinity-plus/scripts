@@ -90,6 +90,7 @@ checkVar() {
 checkVar TELEGRAM_CHAT
 checkVar TELEGRAM_TOKEN
 checkVar KERNELDIR
+checkVar DEFCONFIG
 
 export OUTDIR="$KERNELDIR"/out
 export ANYKERNEL=$KERNELDIR/AnyKernel3
@@ -99,7 +100,6 @@ TOOLCHAIN=$HOME/TC/gcc64
 export TOOLCHAIN
 export ZIP_DIR=$ANYKERNEL
 export IMAGE=$OUTDIR/arch/$ARCH/boot/Image.gz-dtb
-export DEFCONFIG=X00T_defconfig
 
 check_toolchain
 CLANG_VERSION="$($CC --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
@@ -115,7 +115,7 @@ export FINAL_ZIP="$ZIP_DIR/$ZIPNAME"
 
 rm -fv "$IMAGE"
 
-KERNELNAME="$(grep "^CONFIG_LOCALVERSION" arch/$ARCH/configs/$DEFCONFIG | cut -d "=" -f2 | tr -d '"')"
+KERNELNAME="$(grep "^CONFIG_LOCALVERSION" arch/$ARCH/configs/vendor/$DEFCONFIG | cut -d "=" -f2 | tr -d '"')"
 export KERNELNAME
 
 # Send Message about build started
